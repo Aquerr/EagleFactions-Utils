@@ -75,6 +75,6 @@ public class FlyCommand implements CommandExecutor
         Faction chunkFaction = factionLogic.getFactionByChunk(player.getWorld().getUniqueId(), player.getLocation().getChunkPosition()).orElse(null);
         Faction playerFaction = factionLogic.getFactionByPlayerUUID(player.getUniqueId()).orElse(null);
 
-        return Objects.equals(chunkFaction, playerFaction);
+        return playerFaction != null && Objects.equals(chunkFaction, playerFaction);
     }
 }

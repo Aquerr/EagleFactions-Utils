@@ -11,6 +11,7 @@ import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.entity.MoveEntityEvent;
 import org.spongepowered.api.event.filter.cause.Root;
+import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
@@ -50,12 +51,25 @@ public class TFlyListener
         }
     }
 
+    @Listener
+    public void onPlayerDisconnect(final ClientConnectionEvent.Disconnect event, final @Root Player player)
+    {
+        if (hasGameModeThatEnablesFlight(player))
+            return;
+
+        if (hasEFUFlightEnabled(player))
+        {
+            setCanFly(player, false);
+            this.flyModule.getFlyPlayerToggles().remove(player.getUniqueId());
+        }
+    }
+
     private void setCanFly(final Player player, final boolean canFly)
     {
         player.offer(Keys.CAN_FLY, canFly);
         if (player.get(Keys.IS_FLYING).orElse(false))
         {
-            player.offer(Keys.IS_FLYING, false);
+            player.offer(Keys.IS_FLYING, canFly);
         }
     }
 
@@ -70,7 +84,7 @@ public class TFlyListener
         Faction chunkFaction = factionLogic.getFactionByChunk(location.getExtent().getUniqueId(), location.getChunkPosition()).orElse(null);
         Faction playerFaction = factionLogic.getFactionByPlayerUUID(player.getUniqueId()).orElse(null);
 
-        return Objects.equals(chunkFaction, playerFaction);
+        return playerFaction != null && Objects.equals(chunkFaction, playerFaction);
     }
 
     private boolean isSameChunk(Vector3i chunkPosition1, Vector3i chunkPosition2)
