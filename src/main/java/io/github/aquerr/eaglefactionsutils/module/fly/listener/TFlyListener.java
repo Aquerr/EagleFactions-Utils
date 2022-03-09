@@ -9,6 +9,7 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.gamemode.GameMode;
 import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.entity.MoveEntityEvent;
 import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
@@ -51,7 +52,7 @@ public class TFlyListener
         }
     }
 
-    @Listener
+    @Listener(order = Order.EARLY, beforeModifications = true)
     public void onPlayerDisconnect(final ClientConnectionEvent.Disconnect event, final @Root Player player)
     {
         if (hasGameModeThatEnablesFlight(player))
